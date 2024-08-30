@@ -27,3 +27,21 @@ class Products_out(BaseModel):
 
     class Config:
         from_atttributes = True
+
+class OrderCreate(BaseModel):
+    product_id: int
+    quantity: int
+
+class OrderOut(BaseModel):
+    id: int
+    user_id: int
+    product_id: int
+    quantity: int
+
+    class Config:
+        from_atttributes = True
+
+class OrderUpdate(BaseModel):
+    user_id: int
+    product_id: int
+    quantity: int

@@ -8,7 +8,7 @@ from database.model import UserInDB
 from database.database import Base,engine,SessionLocal
 from schemas.schemas import UserOut,UserCreate
 from hashing.hashing import get_password_hash,verify_password
-from authentication.authentication  import create_access_token,decode_access_token
+from authentication.authentication  import create_access_token,get_current_user
 from sqlalchemy.exc import IntegrityError
 
 
@@ -56,7 +56,7 @@ def get_user(db: Session, user_id: int):
     return db.query(UserInDB).filter(UserInDB.id == user_id).first()
 
 
-# def get_current_user(Authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+#def current_user(db: Session = Depends(get_db)):
 #     if Authorization is None:
 #         raise HTTPException(status_code = status.HTTP_403_FORBIDDEN, detail="Authorization header missing")
     
@@ -65,24 +65,24 @@ def get_user(db: Session, user_id: int):
 #     except IndexError:
 #         raise HTTPException(status_code=401, detail="Invalid authorization header format")
       
-#     payload = decode_access_token(token)
-#     username = payload.get("sub")
+    # payload = get_current_user()
+    # user_id = payload.get("sub")
     
-#     if username is None:
-#         raise HTTPException(status_code=401, detail="Invalid token")
+    # if user_id is None:
+    #     raise HTTPException(status_code=401, detail="token not specified")
     
-#     db_user = db.query(UserInDB).filter(UserInDB.username == username).first()
-#     if db_user is None:
-#         raise HTTPException(status_code=401, detail="User not found")
+    # db_user = db.query(UserInDB).filter(UserInDB.id == int(user_id)).first()
+    # if db_user is None:
+    #     raise HTTPException(status_code=401, detail="User not found")
     
-#     return db_user
+    # return db_user
 
-@router_user.get("/users/{id}", response_model=UserOut,tags = ["User"])
-def get_users(id :int, db: Session = Depends(get_db)):
-    db_user = get_user(db, id)
+@router_user.get("/users/{id}", response_model=UserCreate,tags = ["User"])
+def get_users(id :int, db: Session = Depends(get_db)):#, get_current_user : UserCreate = Depends(current_user)):
+    db_user = db.query(UserInDB).filter(UserInDB.id == id).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return UserOut(username=db_user.username)
+    return UserCreate(id = db_user.id , username = db_user.username , password = db_user.hashed_password)
 
 @router_user.delete("/delete_user/{id}", tags=["User"], status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, db: Session = Depends(get_db)):
@@ -111,3 +111,4 @@ def update(id: int, request: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User with this name already exists")
     
     return {"detail": "User updated successfully"}
+
