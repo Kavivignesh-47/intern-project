@@ -11,6 +11,7 @@ class UserInDB(Base):
     hashed_password = Column(String)
 
     orders = relationship("Order", back_populates="user")
+    carts = relationship("Cart", back_populates="user")
 
 
 class ProductInDB(Base):
@@ -22,6 +23,7 @@ class ProductInDB(Base):
     price = Column(Integer)
 
     orders = relationship("Order", back_populates="product")
+    carts = relationship("Cart", back_populates="product")
 
 class Order(Base):
     __tablename__ = "orders"
@@ -33,3 +35,14 @@ class Order(Base):
     
     user = relationship("UserInDB", back_populates="orders")
     product = relationship("ProductInDB", back_populates="orders")
+
+class Cart(Base):
+    __tablename__ = "carts"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    product_id = Column(Integer, ForeignKey("products.product_id"))
+    quantity = Column(Integer)
+    
+    user = relationship("UserInDB", back_populates="carts")
+    product = relationship("ProductInDB", back_populates="carts")

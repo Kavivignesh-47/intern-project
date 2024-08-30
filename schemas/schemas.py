@@ -45,3 +45,16 @@ class OrderUpdate(BaseModel):
     user_id: int
     product_id: int
     quantity: int
+
+class CartCreate(BaseModel):
+    product_id: int
+    quantity: int
+
+class CartOut(BaseModel):
+    id: int
+    user_id: int
+    product_id: int
+    quantity: int
+
+    class Config:
+        from_atttributes = True
