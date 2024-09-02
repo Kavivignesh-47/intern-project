@@ -1,6 +1,6 @@
 import jwt
 from sqlalchemy.orm import Session
-from fastapi import HTTPException , Depends , status
+from fastapi import HTTPException , Depends 
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from typing import Dict

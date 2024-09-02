@@ -28,33 +28,51 @@ class Products_out(BaseModel):
     class Config:
         from_atttributes = True
 
-class OrderCreate(BaseModel):
+
+class CartItemCreate(BaseModel):
     product_id: int
     quantity: int
+
+class OrderCreate(BaseModel):
+    user_id: int
+    products: list[CartItemCreate]
 
 class OrderOut(BaseModel):
     id: int
     user_id: int
-    product_id: int
-    quantity: int
+    user_name: str
+    price: float
 
     class Config:
         from_atttributes = True
 
-class OrderUpdate(BaseModel):
-    user_id: int
-    product_id: int
-    quantity: int
+# class OrderCreate(BaseModel):
+#     product_id: int
+#     quantity: int
 
-class CartCreate(BaseModel):
-    product_id: int
-    quantity: int
+# class OrderOut(BaseModel):
+#     id: int
+#     user_id: int
+#     product_id: int
+#     quantity: int
 
-class CartOut(BaseModel):
-    id: int
-    user_id: int
-    product_id: int
-    quantity: int
+#     class Config:
+#         from_atttributes = True
 
-    class Config:
-        from_atttributes = True
+# # class OrderUpdate(BaseModel):
+# #     user_id: int
+# #     product_id: int
+# #     quantity: int
+
+# class CartCreate(BaseModel):
+#     product_id: int
+#     quantity: int
+
+# class CartOut(BaseModel):
+#     id: int
+#     user_id: int
+#     product_id: int
+#     quantity: int
+
+#     class Config:
+#         from_atttributes = True
