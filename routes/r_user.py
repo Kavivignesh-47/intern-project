@@ -49,14 +49,14 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(UserInDB).filter(UserInDB.username == user.username).first()
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    access_token = create_access_token(data={"sub": str(user.id)})
+    access_token = create_access_token(data={"sub": str(db_user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
 def get_user(db: Session, user_id: int):
     return db.query(UserInDB).filter(UserInDB.id == user_id).first()
 
 
-#def current_user(db: Session = Depends(get_db)):
+def current_user(db: Session = Depends(get_db)):
 #     if Authorization is None:
 #         raise HTTPException(status_code = status.HTTP_403_FORBIDDEN, detail="Authorization header missing")
     
@@ -65,20 +65,20 @@ def get_user(db: Session, user_id: int):
 #     except IndexError:
 #         raise HTTPException(status_code=401, detail="Invalid authorization header format")
       
-    # payload = get_current_user()
-    # user_id = payload.get("sub")
+    payload = get_current_user()
+    user_id = payload.get("sub")
     
-    # if user_id is None:
-    #     raise HTTPException(status_code=401, detail="token not specified")
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="token not specified")
     
-    # db_user = db.query(UserInDB).filter(UserInDB.id == int(user_id)).first()
-    # if db_user is None:
-    #     raise HTTPException(status_code=401, detail="User not found")
+    db_user = db.query(UserInDB).filter(UserInDB.id == int(user_id)).first()
+    if db_user is None:
+        raise HTTPException(status_code=401, detail="User not found")
     
-    # return db_user
+    return db_user
 
 @router_user.get("/users/{id}", response_model=UserCreate,tags = ["User"])
-def get_users(id :int, db: Session = Depends(get_db)):#, get_current_user : UserCreate = Depends(current_user)):
+def get_users(id :int, db: Session = Depends(get_db), get_current_user : UserCreate = Depends(current_user)):
     db_user = db.query(UserInDB).filter(UserInDB.id == id).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")

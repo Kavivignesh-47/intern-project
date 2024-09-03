@@ -23,8 +23,10 @@ def create_access_token(data: Dict[str, str], expires_delta: timedelta = None):
 
 def decode_access_token(token: str,):
     try:
+        print (token)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
+    
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.PyJWTError:
